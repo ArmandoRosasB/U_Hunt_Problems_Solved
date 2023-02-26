@@ -13,7 +13,7 @@
 #include <stack>
 #include <queue>
 #include <vector>
-#include <utility>
+#include <algorithm>
 
 /***********************************************************/
 /*********************** WeightedGraph *********************/
@@ -116,36 +116,67 @@ std::string WListGraph<Vertex, Edge>::toString() const {
 	aux << "\n";
 	return aux.str();
 }
+/*Personalización priority queue*/
+struct Compare
+{
+	template <class Vertex, class Edge>
+	bool operator()(std::pair<Vertex, Edge> a, std::pair<Vertex, Edge> b){
+		 return a.second > b.second;
+	}
+};
 
+
+
+template <class Vertex, class Edge>
+bool encontrar(std::set<std::pair<Vertex, Edge>>s1, Vertex v){
+	typename std::set<std::pair<Vertex, Edge>>:: iterator itr;
+	for(itr = s1.begin(); itr != s1.end(); itr++){
+		if((*itr).first == v){
+			return true;
+		}
+	}
+	return false;
+}
 
 /***********************************************************/
 /************************* Dijkstra ************************/
 /***********************************************************/
 
 template <class Vertex, class Edge>
-Edge bfs(const Vertex& start, const Vertex& , const WeightedGraph<Vertex, Edge>* graph) {
-	std::set<pair<Vertex, Edge>> visited;
-	std::priority_queue<pair<Vertex, Edge>> xVisit; //Sobrecargar operador <
+Edge Dijkstra(const Vertex& start, const Vertex& target, const WeightedGraph<Vertex, Edge>* graph) {
+	std::set<std::pair<Vertex, Edge>> visited;
+	std::priority_queue<std::pair<Vertex, Edge>, std::vector<std::pair<Vertex, Edge>>, Compare> xVisit; 
 	typename std::map<Vertex, Edge>::iterator itr;
 
 	xVisit.push(make_pair(start, 0));
 
+	Edge result;
+
 	while (!xVisit.empty()) {
-		Vertex v = xVisit.front().first;  Edge e =xVisit.front().second; xVisit.pop();
-		if (visited.find(v) == visited.end()) { //Implementar nueva funcion find
+		Vertex v = xVisit.top().first;  Edge e =xVisit.top().second; xVisit.pop();
+
+		if (encontrar(visited, v) == false) { 
 			visited.insert(make_pair(v, e));
 			std::map<Vertex, Edge> connected = graph->getConnectionFrom(v);
 			for (itr = connected.begin(); itr != connected.end(); itr++) {
-				xVisit.push( make_pair(itr->first, e + itr->second));
+				xVisit.push(make_pair(itr->first, e + itr->second));
 			}
 		}
-	}                                                                                                                                       
-	return visited;
-}
+		if(v == target){
+			result = e;
+			break;
+		}
+	}	
+
+	return result;
+	
+}                                                                                                                                       
+
 
 
 
 bool differenceOfOne(std::string, std::string);
+std::vector<std::string> separateString(std::string);
 
 int main(int argc, char* argv[]) {
     int t, n;
@@ -176,17 +207,18 @@ int main(int argc, char* argv[]) {
                     aux[n].insert(palabra);
                 }
             }
-
-           std::cout<<"\n"<<wordGraph->toString();
-            /*
-            for(i = aux.begin(); i != aux.end(); i++){
-                std::cout<< (*i).first << "\t";
-                for(j = (*i).second.begin(); j !=(*i).second.end();j++){
-                    std::cout << (*j) << ", ";
-                }
-                std::cout<<std::endl;
-
-            }*/
+			//std::cout<<"\n"<<wordGraph->toString();
+			/*std::string query;
+			std::vector<std::string> string_vec;
+			while (true){
+				std::getline(std::cin, query);
+				if (query == "/n"){ // ??
+					break;
+				}
+				string_vec = separateString(query);
+				std::cout<< string_vec[0] << " "<< string_vec[1] <<" "<< Dijkstra(string_vec[0], string_vec[1], wordGraph)<<std::endl;
+			}*/
+            
 
     }
 
@@ -206,4 +238,18 @@ bool differenceOfOne(std::string one, std::string two){
     }
 
     return (cont == 1);
+}
+
+std::vector<std::string> separateString(std::string s){
+	std::vector<std::string> v;
+	std::string aux;
+	std::stringstream input_stringstream(s);
+
+		while (std::getline(input_stringstream, aux, ' ')){
+			v.push_back(aux);
+		}
+
+
+	return v;
+
 }
