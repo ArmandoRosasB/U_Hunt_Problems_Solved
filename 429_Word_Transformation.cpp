@@ -125,8 +125,6 @@ struct Compare
 	}
 };
 
-
-
 template <class Vertex, class Edge>
 bool encontrar(std::set<std::pair<Vertex, Edge>>s1, Vertex v){
 	typename std::set<std::pair<Vertex, Edge>>:: iterator itr;
@@ -208,16 +206,15 @@ int main(int argc, char* argv[]) {
                 }
             }
 			//std::cout<<"\n"<<wordGraph->toString();
-			/*std::string query;
+			std::string query;
 			std::vector<std::string> string_vec;
-			while (true){
+
+			for(int r = 0; r < 3; r++){
+				fflush(stdin);
 				std::getline(std::cin, query);
-				if (query == "/n"){ // ??
-					break;
-				}
 				string_vec = separateString(query);
 				std::cout<< string_vec[0] << " "<< string_vec[1] <<" "<< Dijkstra(string_vec[0], string_vec[1], wordGraph)<<std::endl;
-			}*/
+			}
             
 
     }
